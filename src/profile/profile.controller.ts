@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../user/get-user-decorator';
 import { User } from '../user/user.entity';
@@ -19,5 +19,5 @@ export class ProfileController {
         @GetUser() user: User
     ): Promise<Object> {
         return this.profileService.updateProfile(profileDto, user)
-    }  
+    }
 }
