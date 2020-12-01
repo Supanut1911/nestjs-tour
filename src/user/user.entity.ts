@@ -1,4 +1,5 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { BaseEntity, Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Profile } from "../profile/profile.entity";
 
 @Entity()
 @Unique(['username'])
@@ -11,4 +12,9 @@ export class User extends BaseEntity {
 
     @Column()
     password: string
+
+    @OneToOne(type => Profile)
+    @JoinColumn()
+    profile: Profile
+
 }
