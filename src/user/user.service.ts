@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserDto } from './dto/user-credential-dto';
 import { User } from './user.entity';
@@ -6,6 +6,8 @@ import { UserRepository } from './user.repository';
 import * as bcrypt from 'bcrypt'
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './jwt-payload.interface';
+import { Profile } from '../profile/profile.entity';
+import { ProfileDto } from '../profile/dto/profile-dto';
 
 @Injectable()
 export class UserService {
@@ -16,31 +18,43 @@ export class UserService {
         private jwtService: JwtService
     ) {}
 
-    async signup(userDto: UserDto): Promise<void> {
+    async signup(userDto: UserDto, profileDto: ProfileDto): Promise<void> {
         let { username, password } = userDto
         let salt = await bcrypt.genSalt()
 
         let newUser = new User()
         newUser.username = username
-        
         newUser.password = await this.hashPassword(password, salt)
+    
+        console.log(profileDto);
+        
+
+        let profile = new Profile()
+        profile.username = username
+        profile.fname = profileDto.fname
+        profile.lname = profileDto.lname
+        profile.age = profileDto.age
+
+        newUser.profile = profile
 
         try {
+            await profile.save()
             await newUser.save()
         } catch (error) {
-            if(error.code = '23505') {
+            if(error.code == '23505') {
                 throw new ConflictException('user are already exist')
             } else {
-                throw new BadRequestException()
+                console.log(error.message);
+                throw new InternalServerErrorException()
+                
             }
         }   
     }
 
-
     async signIn(userDto: UserDto): Promise<{accessToken: string }> {
 
         let username = await this.validatedPassword(userDto)
-        
+
         if(!username) {
             throw new UnauthorizedException('invalid credential')
         } 
