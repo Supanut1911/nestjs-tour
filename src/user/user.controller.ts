@@ -7,21 +7,18 @@ export class UserController {
 
     constructor(private userService: UserService) {}
 
-    @Get()
-    getUser() {
-        return this.userService.getusers()
-    }
-
-    @Get('/id')
-    getUserbyId() {
-
-    }
-
     @Post()
-    createuser(
+    signup(
         @Body() userDto: UserDto
     ) {
-        return this.userService.createUser(userDto)
+        return this.userService.signup(userDto)
+    }
+
+    @Post('/signin')
+    signIn(
+        @Body() userDto: UserDto
+    ) {
+        return this.userService.signIn(userDto)
     }
 
 

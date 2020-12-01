@@ -1,31 +1,22 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserDto } from './dto/user-credential-dto';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 import * as bcrypt from 'bcrypt'
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from './jwt-payload.interface';
 
 @Injectable()
 export class UserService {
 
     constructor(
         @InjectRepository(UserRepository)
-        private userRepository: UserRepository
+        private userRepository: UserRepository,
+        private jwtService: JwtService
     ) {}
 
-    async getusers() {
-        return this.userRepository.find()
-    }
-
-    async getUserById(id: string): Promise<User> {
-        let user = await this.userRepository.findOne(id)
-        if(!user) {
-            throw new NotFoundException()
-        }
-        return user
-    }
-
-    async createUser(userDto: UserDto): Promise<void> {
+    async signup(userDto: UserDto): Promise<void> {
         let { username, password } = userDto
         let salt = await bcrypt.genSalt()
 
@@ -45,7 +36,39 @@ export class UserService {
         }   
     }
 
+
+    async signIn(userDto: UserDto): Promise<{accessToken: string }> {
+
+        let username = await this.validatedPassword(userDto)
+        
+        if(!username) {
+            throw new UnauthorizedException('invalid credential')
+        } 
+
+        let payload: JwtPayload =  { username }
+        let accessToken = await this.jwtService.sign(payload)
+
+        return { accessToken }
+    }
+
+    async validatedPassword(userDto: UserDto): Promise<string> {
+        let { username, password } = userDto
+        let user = await this.userRepository.findOne({username})
+        
+        if( (user)&& (await this.validatePassword(password, user.password))) {
+            return user.username
+        } else {
+            return null
+        } 
+    }
+
     private hashPassword(password: string, salt): string {
         return bcrypt.hash(password, salt)
+    }
+
+    private async validatePassword(password: string, userPassword: string): Promise<boolean> {
+        
+        let hash = await bcrypt.compare(password, userPassword)
+        return hash
     }
 }
