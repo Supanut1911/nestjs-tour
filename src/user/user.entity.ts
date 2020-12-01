@@ -13,8 +13,10 @@ export class User extends BaseEntity {
     @Column()
     password: string
 
+    @Column()
+    profileId: string
     @OneToOne(type => Profile)
-    @JoinColumn()
+    @JoinColumn({name: 'profileId'})
     profile: Profile
 
 }
