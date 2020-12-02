@@ -1,4 +1,39 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from '../user/user.entity';
+import { TodoDto } from './dto/todo.dto';
+import { Todo } from './todo.entity';
+import { TodoStatus } from './todo.enum';
+import { TodoRepository } from './todo.repository';
 
 @Injectable()
-export class TodoService {}
+export class TodoService {
+
+    constructor(
+        @InjectRepository(TodoRepository)
+        private todoRepository: TodoRepository
+    ) {}
+
+    async createTodo(
+        todoDto: TodoDto,
+        user: User
+    ) {
+        let {todotopic, description} = todoDto
+
+        let newTodo = new Todo()
+        newTodo.todotopic = todotopic
+        newTodo.description = description
+        newTodo.status = TodoStatus.INIT
+        newTodo.user = user
+
+        try {
+            await newTodo.save()
+        } catch (error) {
+            console.log(error.message);
+            throw new Error(error)
+            // throw new BadRequestException()
+        }
+    }
+
+}
