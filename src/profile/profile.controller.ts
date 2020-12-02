@@ -3,6 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../user/get-user-decorator';
 import { User } from '../user/user.entity';
 import { ProfileDto } from './dto/profile-dto';
+import { Profile } from './profile.entity';
 import { ProfileService } from './profile.service';
 
 @Controller('profile')
@@ -19,5 +20,12 @@ export class ProfileController {
         @GetUser() user: User
     ): Promise<Object> {
         return this.profileService.updateProfile(profileDto, user)
+    }
+
+    @Get()
+    getProfile(
+        @GetUser() user: User
+    ):Promise<Profile> {
+        return this.profileService.getProfile(user)
     }
 }
