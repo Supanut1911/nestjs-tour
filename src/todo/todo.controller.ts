@@ -1,9 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { stat } from 'fs';
 import { GetUser } from '../user/get-user-decorator';
 import { User } from '../user/user.entity';
 import { TodoDto } from './dto/todo.dto';
+import { TodoStatusValidationPipe } from './pipe/todo-status-validation.pipe';
 import { Todo } from './todo.entity';
+import { TodoStatus } from './todo.enum';
 import { TodoService } from './todo.service';
 
 @Controller('todo')
@@ -28,6 +31,15 @@ export class TodoController {
         @GetUser() user: User
     ):Promise<Todo[]> {
         return this.todoService.getTodos(user)
+    }
+
+    @Patch('/:id')
+    updateTodo(
+        @Param('id') id: string,
+        @Body('status', TodoStatusValidationPipe) status: TodoStatus,
+        @GetUser() user: User  
+    ) {
+        return this.todoService.updateTodo(id, status, user)
     }
 
     @Delete('/:id')

@@ -10,7 +10,7 @@ export class TodoStatusValidationPipe implements PipeTransform {
     
     transform(value: any) {
         // throw new Error("Method not implemented.");
-        console.log('value', value);
+        // console.log('value' value);
 
         if(!this.isStatusValid(value)) {
             throw new BadRequestException(`${value} is and invalid status`)
