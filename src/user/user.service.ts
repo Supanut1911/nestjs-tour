@@ -21,20 +21,16 @@ export class UserService {
     async signup(userDto: UserDto, profileDto: ProfileDto): Promise<void> {
         let { username, password } = userDto
         let salt = await bcrypt.genSalt()
-
-        let newUser = new User()
-        newUser.username = username
-        newUser.password = await this.hashPassword(password, salt)
     
-        console.log(profileDto);
-        
-
         let profile = new Profile()
         profile.username = username
         profile.fname = profileDto.fname
         profile.lname = profileDto.lname
         profile.age = profileDto.age
 
+        let newUser = new User()
+        newUser.username = username
+        newUser.password = await this.hashPassword(password, salt)
         newUser.profile = profile
 
         try {

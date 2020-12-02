@@ -8,7 +8,7 @@ export class UserController {
 
     constructor(private userService: UserService) {}
 
-    @Post()
+    @Post('/signup')
     signup(
         @Body() userDto: UserDto,
         @Body() profileDto: ProfileDto
