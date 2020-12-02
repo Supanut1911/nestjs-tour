@@ -81,4 +81,19 @@ export class UserService {
         let hash = await bcrypt.compare(password, userPassword)
         return hash
     }
+
+    async deleteUser(
+        id: string
+    ):Promise<string> {
+        try {
+            let result = await this.userRepository.delete( id )
+            if(result.affected === 0) {
+                throw new NotFoundException()
+            }
+            return 'delete success'
+        } catch (error) {
+                throw new Error(error)
+            
+        }
+    }
 }

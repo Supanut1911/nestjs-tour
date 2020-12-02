@@ -18,7 +18,7 @@ export class Todo extends BaseEntity {
 
     @Column()
     createBy: string
-    @ManyToOne(type => User, user => user.todos, { eager: false })
+    @ManyToOne(type => User, user => user.todos, { eager: false, onDelete: 'CASCADE' })
     @JoinColumn({ name: 'createBy'})
     user: User
 }

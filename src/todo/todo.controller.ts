@@ -38,7 +38,7 @@ export class TodoController {
         @Param('id') id: string,
         @Body('status', TodoStatusValidationPipe) status: TodoStatus,
         @GetUser() user: User  
-    ) {
+    ):Promise<Todo> {
         return this.todoService.updateTodo(id, status, user)
     }
 
@@ -49,5 +49,4 @@ export class TodoController {
     ): Promise<Object> {
         return this.todoService.deletTodo(id, user)
     }
-    
 }

@@ -1,6 +1,8 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ProfileDto } from '../profile/dto/profile-dto';
 import { UserDto } from './dto/user-credential-dto';
+import { GetUser } from './get-user-decorator';
+import { User } from './user.entity';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -23,5 +25,10 @@ export class UserController {
         return this.userService.signIn(userDto)
     }
 
-
+    @Delete('/:id')
+    deleteUser(
+        @Param('id') id: string,
+    ):Promise<string> {
+        return this.userService.deleteUser(id)
+    }
 }

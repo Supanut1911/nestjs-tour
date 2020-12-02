@@ -35,7 +35,6 @@ export class TodoService {
         } catch (error) {
             console.log(error.message);
             throw new Error(error)
-            throw new BadRequestException()
         }
     }
 
@@ -50,7 +49,7 @@ export class TodoService {
         id: string,
         status: TodoStatus,
         user: User
-    ) {
+    ):Promise<Todo> {
         try {
             let todo = await this.todoRepository.findOne({ id, createBy: user.id })
             if(!todo) {
