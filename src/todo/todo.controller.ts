@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../user/get-user-decorator';
 import { User } from '../user/user.entity';
@@ -14,10 +14,18 @@ export class TodoController {
     ){}
 
     @Post()
+    @UsePipes(ValidationPipe)
     createTodo(
         @Body() todoDto: TodoDto,
         @GetUser() user: User
     ) {
         return this.todoService.createTodo(todoDto, user)
+    }
+
+    @Get()
+    getTodos(
+
+    ) {
+
     }
 }

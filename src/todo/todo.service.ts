@@ -18,7 +18,7 @@ export class TodoService {
     async createTodo(
         todoDto: TodoDto,
         user: User
-    ) {
+    ):Promise<Object> {
         let {todotopic, description} = todoDto
 
         let newTodo = new Todo()
@@ -29,6 +29,8 @@ export class TodoService {
 
         try {
             await newTodo.save()
+            delete newTodo.user
+            return newTodo
         } catch (error) {
             console.log(error.message);
             throw new Error(error)
