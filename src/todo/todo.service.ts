@@ -18,7 +18,7 @@ export class TodoService {
     async createTodo(
         todoDto: TodoDto,
         user: User
-    ):Promise<Object> {
+    ):Promise<Todo> {
         let {todotopic, description} = todoDto
 
         let newTodo = new Todo()
@@ -36,6 +36,13 @@ export class TodoService {
             throw new Error(error)
             // throw new BadRequestException()
         }
+    }
+
+    async getTodos(
+        user: User
+    ):Promise<Todo[]> {
+        let todos = this.todoRepository.find({ user })
+        return todos
     }
 
 }
