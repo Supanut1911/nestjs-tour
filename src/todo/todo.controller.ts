@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../user/get-user-decorator';
 import { User } from '../user/user.entity';
@@ -29,4 +29,13 @@ export class TodoController {
     ):Promise<Todo[]> {
         return this.todoService.getTodos(user)
     }
+
+    @Delete('/:id')
+    deleteTodo(
+        @Param('id') id: string,
+        @GetUser() user: User
+    ): Promise<Object> {
+        return this.todoService.deletTodo(id, user)
+    }
+    
 }

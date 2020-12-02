@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UseGuards } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user/user.entity';
@@ -45,4 +45,24 @@ export class TodoService {
         return todos
     }
 
+    async deletTodo (
+        id: string,
+        user: User
+    ):Promise<Object> {
+
+        console.log(id, user.id);
+
+        try {
+            let result = await this.todoRepository.delete({ id, createBy: user.id})
+            if (result.affected == 0) {
+                throw new NotFoundException()
+            }
+            return {
+                message: 'success'
+            }
+        } catch (error) {
+            throw new InternalServerErrorException()
+        }
+        
+    }
 }
