@@ -56,6 +56,8 @@ export class UserService {
         } 
 
         let payload: JwtPayload =  { username }
+        // console.log('>>>',payload);
+        
         let accessToken = await this.jwtService.sign(payload)
 
         return { accessToken }
@@ -64,6 +66,7 @@ export class UserService {
     async validatedPassword(userDto: UserDto): Promise<string> {
         let { username, password } = userDto
         let user = await this.userRepository.findOne({username})
+        console.log('user',user);
         
         if( (user)&& (await this.validatePassword(password, user.password))) {
             return user.username

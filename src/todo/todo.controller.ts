@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { stat } from 'fs';
+import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GetUser } from '../user/get-user-decorator';
 import { User } from '../user/user.entity';
 import { TodoDto } from './dto/todo.dto';
@@ -9,8 +9,10 @@ import { Todo } from './todo.entity';
 import { TodoStatus } from './todo.enum';
 import { TodoService } from './todo.service';
 
+@ApiTags('Todo')
 @Controller('todo')
 @UseGuards(AuthGuard())
+@ApiBearerAuth()
 export class TodoController {
 
     constructor(
@@ -18,6 +20,15 @@ export class TodoController {
     ){}
 
     @Post()
+    @ApiResponse({
+        status: 201
+    })
+    @ApiCreatedResponse({
+        description: 'create todo'
+    })
+    @ApiBody({
+        type: TodoDto
+    })
     @UsePipes(ValidationPipe)
     createTodo(
         @Body() todoDto: TodoDto,
@@ -47,6 +58,23 @@ export class TodoController {
         @Param('id') id: string,
         @GetUser() user: User
     ): Promise<Object> {
-        return this.todoService.deletTodo(id, user)
+        return this.todoService.deleteTodo(id, user)
+    }
+
+    // @Get('/test')
+    // getTest(
+    //     req: Request,
+    //     @Body('avatarname') avatarname: string,
+    //     @Body() power: number
+    // ) {
+    //     console.log(req, avatarname, power);
+        
+    // }
+
+    @Get('/test')
+    getTest(
+
+    ) {
+        return 'ya'
     }
 }

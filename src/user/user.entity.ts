@@ -20,6 +20,6 @@ export class User extends BaseEntity {
     @JoinColumn({name: 'profileId'})
     profile: Profile
 
-    @OneToMany(type => Todo, todo => todo.user, { eager: true })
+    @OneToMany(type => Todo, todo => todo.user, { eager: true, cascade: true })
     todos: Todo[]
 }

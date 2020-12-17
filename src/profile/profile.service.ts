@@ -1,5 +1,6 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { getRepository } from 'typeorm';
 import { User } from '../user/user.entity';
 import { ProfileDto } from './dto/profile-dto';
 import { Profile } from './profile.entity';
@@ -48,7 +49,9 @@ export class ProfileService {
         user: User
     ): Promise<Profile> {
         try {
-            let profile = await this.profileRepository.findOne( user.profileId )
+            // let profile = await this.profileRepository.findOne( user.profileId )
+            let profileRepository = getRepository(Profile)
+            let profile = await profileRepository.findOne( user.profileId)
             if(!profile) {
                 throw new NotFoundException()
             }

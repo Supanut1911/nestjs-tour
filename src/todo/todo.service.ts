@@ -22,7 +22,7 @@ export class TodoService {
     ):Promise<Todo> {
         let {todotopic, description} = todoDto
 
-        let newTodo = new Todo()
+        let newTodo = this.todoRepository.create()
         newTodo.todotopic = todotopic
         newTodo.description = description
         newTodo.status = TodoStatus.INIT
@@ -30,11 +30,11 @@ export class TodoService {
 
         try {
             await newTodo.save()
-            delete newTodo.user
+            // delete newTodo.user
             return newTodo
         } catch (error) {
             console.log(error.message);
-            throw new Error(error)
+            throw new Error()
         }
     }
 
@@ -64,13 +64,13 @@ export class TodoService {
         }
     }
 
-    async deletTodo (
+    async deleteTodo (
         id: string,
         user: User
     ):Promise<Object> {
         try {
             let result = await this.todoRepository.delete({ id, createBy: user.id})
-            if (result.affected == 0) {
+            if (result.affected === 0) {
                 throw new NotFoundException()
             }
             return {

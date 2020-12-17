@@ -1,10 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Req } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { ProfileDto } from '../profile/dto/profile-dto';
+import { Profile } from '../profile/profile.entity';
 import { UserDto } from './dto/user-credential-dto';
 import { GetUser } from './get-user-decorator';
 import { User } from './user.entity';
 import { UserService } from './user.service';
 
+@ApiTags('User')
 @Controller('user')
 export class UserController {
 
@@ -22,6 +25,8 @@ export class UserController {
     signIn(
         @Body() userDto: UserDto
     ) {
+        console.log('yayaa');
+        
         return this.userService.signIn(userDto)
     }
 
@@ -31,4 +36,12 @@ export class UserController {
     ):Promise<string> {
         return this.userService.deleteUser(id)
     }
+
+    @Get('/ya')
+    test(
+        @GetUser() user: User
+    ) {
+        console.log(user);
+        
+    }   
 }
