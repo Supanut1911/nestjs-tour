@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor, MulterModule } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GetUser } from '../user/get-user-decorator';
 import { User } from '../user/user.entity';
@@ -8,6 +9,10 @@ import { TodoStatusValidationPipe } from './pipe/todo-status-validation.pipe';
 import { Todo } from './todo.entity';
 import { TodoStatus } from './todo.enum';
 import { TodoService } from './todo.service';
+import { diskStorage } from  'multer';
+import { extname } from  'path';
+import { PaginationDto } from './dto/Pagination.dto';
+import { PaginatedProductsResultDto } from './dto/PaginatedProductsResult.dto';
 
 @ApiTags('Todo')
 @Controller('todo')
@@ -76,5 +81,36 @@ export class TodoController {
 
     ) {
         return 'ya'
+    }
+
+    @Post('/upload')
+    @UseInterceptors(FileInterceptor('file',{
+        storage: diskStorage({
+          destination: './avatars', 
+          filename: (req, file, cb) => {
+          const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('')
+          return cb(null, `${randomName}${extname(file.originalname)}`)
+        }
+        })
+      }))
+    upload(
+        @UploadedFile() file,
+        @Res() res
+    ) {
+        console.log(file);
+        return res.send('ok')
+    }
+
+    @Get('/getAllTodo')
+    findAll(
+        @Query() paginationDto: PaginationDto  
+    ): Promise<PaginatedProductsResultDto> {
+        paginationDto.page = Number(paginationDto.page)
+        paginationDto.limit = Number(paginationDto.limit)
+
+        return this.todoService.findAllTodo({
+        ...paginationDto,
+        limit: paginationDto.limit > 10 ? 10 : paginationDto.limit
+    })
     }
 }

@@ -25,8 +25,6 @@ export class UserController {
     signIn(
         @Body() userDto: UserDto
     ) {
-        console.log('yayaa');
-        
         return this.userService.signIn(userDto)
     }
 

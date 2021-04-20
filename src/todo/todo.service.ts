@@ -3,6 +3,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { InjectRepository } from '@nestjs/typeorm';
 import { stat } from 'fs';
 import { User } from '../user/user.entity';
+import { PaginatedProductsResultDto } from './dto/PaginatedProductsResult.dto';
+import { PaginationDto } from './dto/Pagination.dto';
 import { TodoDto } from './dto/todo.dto';
 import { Todo } from './todo.entity';
 import { TodoStatus } from './todo.enum';
@@ -79,5 +81,26 @@ export class TodoService {
         } catch (error) {
             throw new InternalServerErrorException()
         } 
+    }
+
+    async findAllTodo(
+        paginationDto: PaginationDto
+    ): Promise<PaginatedProductsResultDto> {
+        const skippedItems = (paginationDto.page - 1) * paginationDto.limit;
+
+        const totalCount = await this.todoRepository.count()
+        const todos = await this.todoRepository.createQueryBuilder()
+        // .orderBy('createdAt', "DESC")
+        .offset(skippedItems)
+        .limit(paginationDto.limit)
+        .getMany()
+
+        return {
+            data: todos,
+            page: paginationDto.page,
+            limit: paginationDto.limit,
+            totalCount,
+        }
+
     }
 }
